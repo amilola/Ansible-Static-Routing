@@ -15,7 +15,7 @@ The lab is built in a containerized environment (Containerlab). It contains:
 - **1× Edge Router** (Edge)  
 - **1× Core Router** (Core)
 
-## 🗺️ Topolog Diagram
+## 🗺️ Topology Diagram
 
 ![Network Topology](./images/SRTopology.png)
   
