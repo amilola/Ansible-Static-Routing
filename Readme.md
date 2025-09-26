@@ -13,6 +13,11 @@ The lab is built in a containerized environment (Containerlab). It contains:
 
 - **2× Access Routers** (Access1, Access2)  
 - **1× Edge Router** (Edge)  
-- **1× Core Router** (Core)  
+- **1× Core Router** (Core)
+
+## 🗺️ Topolog Diagram
+
+![Network Topology](./images/SRTopology.png)
+  
 
 
