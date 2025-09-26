@@ -1,0 +1,16 @@
+---
+all:
+  children:
+    Core:
+      hosts:
+        clab-sr-Core:
+    Edge:
+      hosts:
+        clab-sr-Edge:
+    Access1:
+      hosts:
+        clab-sr-Access1:
+    Access2:
+      hosts:
+        clab-sr-Access2:
+

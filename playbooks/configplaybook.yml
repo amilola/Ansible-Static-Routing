@@ -1,0 +1,53 @@
+---
+- name: Configure SR Linux Routers for Static Routing
+  hosts: all
+  gather_facts: false
+  serial: 1
+  tasks:
+    - name: Configure interfaces
+      nokia.srlinux.config:
+        update:
+          - path: "/interface[name={{ item.name }}]"
+            value:
+              admin-state: enable
+              description: "{{ item.desc }}"
+              subinterface:
+                - index: 0
+                  admin-state: enable
+                  ipv4:
+                    admin-state: enable
+                    address:
+                      - ip-prefix: "{{ item.ip }}"
+
+          - path: "/network-instance[name=default]"
+            value:
+              description: "The instance I'll be working with"
+              admin-state: enable
+
+          - path: "/network-instance[name=default]/interface[name={{ item.name  }}.0]"
+            value: {}
+      loop: "{{ interfaces }}"    
+
+    - name: Configure static routes
+      nokia.srlinux.config:
+        update:
+          - path: "/network-instance[name=default]/next-hop-groups"
+            value: 
+              group:
+                - name: "{{ item.nexthop_name }}"
+                  admin-state: enable
+                  nexthop:
+                    - index: "{{ item.index }}"
+                      ip-address: "{{ item.nexthop_ip }}"
+                      admin-state: enable
+
+          - path: "/network-instance[name=default]/static-routes"
+            value:
+              admin-state: enable
+              route:
+                - admin-state: enable
+                  prefix: "{{ item.prefix }}"
+                  next-hop-group: "{{ item.nexthop_name }}"
+
+
+      loop: "{{ routes }}"

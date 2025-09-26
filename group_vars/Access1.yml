@@ -1,0 +1,15 @@
+---
+interfaces:
+  - name: "ethernet-1/1"
+    desc: "Access link to the internet"
+    ip: "172.20.20.102/30"
+
+  - name: "system0"
+    desc: "System IP"
+    ip: "172.20.20.6/32"
+
+routes:
+  - prefix: "0.0.0.0/0"
+    nexthop_name: "Internet"
+    index: "1"
+    nexthop_ip: "172.20.20.101"

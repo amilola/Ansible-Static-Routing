@@ -1,0 +1,44 @@
+- name: Show interfaces and routetable nicely
+  hosts: all
+  gather_facts: false
+  serial: 1
+  tasks:
+    - name: Run show interfaces
+      nokia.srlinux.cli:
+        commands:
+          - show network-instance default interfaces
+      register: intf_output
+
+    - name: Interfaces for "{{ inventory_hostname }}"
+      debug:
+        msg: 
+          - " Network Instance  | Interface  |   Type    | Operational State  | Prefix     | Status"   
+          - "{{ item['Net instance'] |  default('') }} | {{ item['Interface'] |  default('') }} | {{ item['Type'] |  default('') }}     | {{ item['Oper state'] |  default('') }} | {{ item['Prefixes'][0]['Prefix'] |  default('') }} | {{ item['Prefixes'][0]['Status'] |  default('') }}"
+      loop: "{{ intf_output.result[0]['Network Interfaces'] }}"
+      loop_control:
+        label: "{{ item['Interface'] }}"
+
+    - name: Run show route-table
+      nokia.srlinux.cli:
+        commands:
+          - show network-instance default route-table
+      register: route_output
+
+    - name: Build interface table
+      set_fact:
+        intf_data: "{{ route_output.result[0].text.split('\n}\n{')[0] ~ '\n}' }}"
+
+    - name: Parse JSON into dict
+      set_fact:
+        intf_table: "{{ intf_data | from_json }}"
+
+    - name: Route Table for "{{ inventory_hostname }}"
+      debug:
+        msg:
+          - "Prefix           | Route Type  | Route Owner   | Active  | NextHop (Type)   | NextHop (Interface)" 
+          - "{{ item['Prefix']| default('') }} | {{ item['Route Type']| default('') }} | {{ item['Route Owner']| default('') }} | {{ item['Active']| default('') }} |  {{ item['Next-hop (Type)']| default('') }} | {{ item['Next-hop Interface']| default('') }}" 
+      loop: "{{ intf_table['instance'][0]['ip route'] }}"
+      loop_control:
+        label: "{{ item['Prefix'] }}"
+
+
